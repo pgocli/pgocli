@@ -1,0 +1,7 @@
+env/
+src/
+
+*.pyc
+*.egg-info/
+
+config.json
