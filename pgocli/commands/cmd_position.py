@@ -10,6 +10,8 @@ from geopy.exc import GeocoderQueryError
 @click.option('--position', required=True, prompt=True)
 @click.pass_context
 def cli(ctx, position):
+    config = ctx.obj.get('config')
+
     # TODO: include google api key here
     geocoder = GoogleV3()
 
@@ -21,14 +23,14 @@ def cli(ctx, position):
             return False
 
         click.secho('Found position: {}'.format(loc.address.encode('utf8')), fg='cyan')
-        ctx.obj.config.position = dict(
+        config.position = dict(
             text=loc.address,
             latitude=loc.latitude,
             longitude=loc.longitude,
             altitude=loc.altitude
         )
 
-        ctx.obj.config.save()
+        config.save()
 
     except GeocoderQueryError:
         click.secho('Could not geocode the specified location, aborting...', fg='red')

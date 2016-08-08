@@ -3,15 +3,12 @@
 import click
 import os
 import sys
+import time
 
 from pgoapi import PGoApi
 
 from .config import Config
 
-
-class Context:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
 
 cmd_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), 'commands'))
 
@@ -50,15 +47,42 @@ def _init_login(ctx, api, config):
         click.secho('\nAuthentication info was not set, run `pgo login` first.', fg='red')
         ctx.exit()
 
-    return api.login(
+    api.login(
         config.auth.get('type'),
         config.auth.get('username'),
         config.auth.get('password')
     )
 
+def _init_player(ctx, api, config):
+    if not config.auth:
+        click.secho('\nAuthentication info was not set, run `pgo login` first.', fg='red')
+        ctx.exit()
+
+    request = api.create_request()
+    request.get_player()
+    request.get_hatched_eggs()
+    request.get_inventory()
+    request.check_awarded_badges()
+    request.download_settings(hash="54b359c97e46900f87211ef6e6dd0b7f2a3ea1f5")
+    responses = request.call().get('responses', {})
+
+    ctx.obj['settings'] = responses   \
+        .pop('DOWNLOAD_SETTINGS', {}) \
+        .get('settings')
+
+    ctx.obj['inventory'] = responses \
+        .pop('GET_INVENTORY', {})    \
+        .get('inventory_delta', {})  \
+        .get('inventory_items')
+
+    ctx.obj['player'] = responses \
+        .pop('GET_PLAYER', {})    \
+        .get('player_data')
+
 INIT_STEPS=dict(
     position=_init_position,
     login=_init_login,
+    player=_init_player
 )
 
 @click.command(cls=MultiCommand)
@@ -69,25 +93,27 @@ def cli(ctx, config):
     config = Config(config or 'config.json')
     pgoapi = PGoApi()
 
+    ctx.obj = dict(
+        config=config,
+        pgoapi=pgoapi
+    )
+
     if ctx.invoked_subcommand in ['config', 'position']:
         steps=[]
     elif ctx.invoked_subcommand in ['login']:
         steps=['position']
     else:
-        steps=['position', 'login']
+        steps=['position', 'login', 'player']
 
     if len(steps):
-        with click.progressbar(length=len(steps), label='Initializing…') as bar:
+        with click.progressbar(length=len(steps) * 2, label='Initializing…') as bar:
             for step in steps:
                 if not step in INIT_STEPS:
                     raise Exception('Unknown "{}" initialization step'.format(step))
 
                 INIT_STEPS[step](ctx, pgoapi, config)
                 bar.update(1)
+                time.sleep(0.3)
+                bar.update(1)
 
             click.echo()
-
-    ctx.obj = Context(
-        config=config,
-        pgoapi=pgoapi
-    )

@@ -9,7 +9,7 @@ def cli(ctx):
              short_help='Display the saved configuration')
 @click.pass_context
 def cli_list(ctx):
-    config=ctx.obj.config
+    config=ctx.obj.get('config')
 
     click.secho('Displaying configuration from {}.\n'.format(
         config.get_path()
@@ -22,7 +22,7 @@ def cli_list(ctx):
 @click.confirmation_option(prompt='Are you sure you want to clear the configuration?')
 @click.pass_context
 def cli_clear(ctx):
-    config=ctx.obj.config
+    config=ctx.obj.get('config')
 
     config.clear()
     config.save()
