@@ -8,6 +8,7 @@ import time
 from pgoapi import PGoApi
 
 from .config import Config
+from .inventory import Inventory
 
 
 cmd_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), 'commands'))
@@ -70,10 +71,12 @@ def _init_player(ctx, api, config):
         .pop('DOWNLOAD_SETTINGS', {}) \
         .get('settings')
 
-    ctx.obj['inventory'] = responses \
-        .pop('GET_INVENTORY', {})    \
-        .get('inventory_delta', {})  \
-        .get('inventory_items')
+    ctx.obj['inventory'] = Inventory(
+        responses
+            .pop('GET_INVENTORY', {})    \
+            .get('inventory_delta', {})  \
+            .get('inventory_items')
+    )
 
     ctx.obj['player'] = responses \
         .pop('GET_PLAYER', {})    \

@@ -2,10 +2,13 @@ import click
 import json
 
 def _echo_string(name, value):
-    click.echo('{:22}: {}'.format(click.style(name, bold=True), value))
+    click.echo('{:30}: {}'.format(click.style(name, bold=True), value))
 
 def _echo_number(name, value):
     _echo_string(name, '{:,}'.format(int(value)))
+
+def _echo_fraction(name, num, den):
+    _echo_string(name, '{:,} / {:,}'.format(int(num), int(den)))
 
 @click.command(name='info',
                short_help='Display information about the player')
@@ -13,6 +16,7 @@ def _echo_number(name, value):
 def cli(ctx):
     config = ctx.obj.get('config')
     player = ctx.obj.get('player')
+    inventory = ctx.obj.get('inventory')
 
     click.secho('[General]', fg='')
     _echo_string('Username', player.get('username'))
@@ -34,10 +38,19 @@ def cli(ctx):
     _echo_number('Stardust', currency_dust)
     click.echo()
 
-    click.secho('[Inventory]', fg='cyan')
-    _echo_number('Storage size', player.get('max_item_storage'))
+    pokedex_total = len(inventory.pokemons.STATIC_DATA)
+
+    click.secho('[Pokedex]', fg='magenta')
+    _echo_fraction('Seen', inventory.pokedex.total_seen(), pokedex_total)
+    _echo_fraction('Captured', inventory.pokedex.total_captured(), pokedex_total)
     click.echo()
 
     click.secho('[Pokemon]', fg='cyan')
-    _echo_number('Storage size', player.get('max_pokemon_storage'))
+    _echo_fraction('Storage', inventory.pokemons.total_count(), player.get('max_pokemon_storage'))
+    click.echo()
+
+    click.secho('[Inventory]', fg='cyan')
+    _echo_fraction('Storage', inventory.items.total_count(), player.get('max_item_storage'))
+    for item in inventory.items.all():
+        _echo_number(item.name, item.count)
     click.echo()
