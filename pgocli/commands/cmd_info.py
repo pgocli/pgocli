@@ -2,7 +2,7 @@ import click
 import json
 
 def _echo_string(name, value):
-    click.echo('{:30}: {}'.format(click.style(name, bold=True), value))
+    click.echo('{:27}: {}'.format(click.style(name, bold=True), value))
 
 def _echo_number(name, value):
     _echo_string(name, '{:,}'.format(int(value)))
