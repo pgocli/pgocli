@@ -10,7 +10,7 @@ RUN apt-get update -qq && \
       python-pip \
       python-dev
 
-# pgocli (https://github.com/tusbar/pgocli)
+# pgocli (https://github.com/pgocli/pgocli)
 ADD . /opt/pgocli
 
 # pip (https://pypi.python.org/pypi/pip)
