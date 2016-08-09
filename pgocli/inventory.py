@@ -251,6 +251,9 @@ class Pokemon(object):
         self.cp = data['cp']
         self._static_data = Pokemons.data_for(self.pokemon_id)
         self.name = Pokemons.name_for(self.pokemon_id)
+        self.iv_attack = data.get('individual_attack', 0)
+        self.iv_defense = data.get('individual_defense', 0)
+        self.iv_stamina = data.get('individual_stamina', 0)
         self.iv = self._compute_iv()
 
     def can_evolve_now(self):
@@ -271,24 +274,12 @@ class Pokemon(object):
         return Pokemons.first_evolution_id_for(self.pokemon_id)
 
     @property
-    def candy_quantity(self):
-        return candies().get(self.pokemon_id).quantity
-
-    @property
     def evolution_cost(self):
         return self._static_data['Next Evolution Requirements']['Amount']
 
     def _compute_iv(self):
-        total_IV = 0.0
-        iv_stats = ['individual_attack', 'individual_defense', 'individual_stamina']
-
-        for individual_stat in iv_stats:
-            try:
-                total_IV += self._data[individual_stat]
-            except Exception:
-                self._data[individual_stat] = 0
-                continue
-        pokemon_potential = round((total_IV / 45.0), 2)
+        total_iv = self.iv_attack + self.iv_defense + self.iv_stamina
+        pokemon_potential = round((total_iv / 45.0), 2)
         return pokemon_potential
 
 
