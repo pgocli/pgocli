@@ -8,11 +8,11 @@ Helper class for updating/retrieving Inventory data
 Initially designed by https://github.com/aeckert
 '''
 
+
 class _BaseInventoryComponent(object):
-    TYPE = None  # base key name for items of this type
-    ID_FIELD = None  # identifier field for items of this type
-    STATIC_DATA_FILE = None  # optionally load static data from file,
-                             # dropping the data in a static variable named STATIC_DATA
+    TYPE = None
+    ID_FIELD = None
+    STATIC_DATA_FILE = None
 
     def __init__(self):
         self._data = {}
@@ -25,8 +25,6 @@ class _BaseInventoryComponent(object):
             cls.STATIC_DATA = json.load(open(cls.STATIC_DATA_FILE))
 
     def parse(self, item):
-        # optional hook for parsing the dict for this item
-        # default is to use the dict directly
         return item
 
     def retrieve_data(self, inventory):
@@ -58,13 +56,18 @@ class Candy(object):
 
     def consume(self, amount):
         if self.quantity < amount:
-            raise Exception('Tried to consume more {} candy than you have'.format(self.type))
+            raise Exception(
+                'Tried to consume more {} candy than you have'.format(
+                    self.type
+                )
+            )
         self.quantity -= amount
 
     def add(self, amount):
         if amount < 0:
             raise Exception('Must add positive amount of candy')
         self.quantity += amount
+
 
 class Candies(_BaseInventoryComponent):
     TYPE = 'candy'
@@ -91,7 +94,10 @@ class Pokedex(_BaseInventoryComponent):
         return len(self._data)
 
     def total_captured(self):
-        return len([p for p in self._data if self._data[p].get('times_captured', 0) > 0])
+        return len([
+            p for p in self._data
+            if self._data[p].get('times_captured', 0) > 0
+        ])
 
     def seen(self, pokemon_id):
         return pokemon_id in self._data
@@ -218,14 +224,22 @@ class Pokemons(_BaseInventoryComponent):
     @classmethod
     def next_evolution_id_for(cls, pokemon_id):
         try:
-            return int(cls.data_for(pokemon_id)['Next evolution(s)'][0]['Number'])
+            return int(
+                cls.data_for(pokemon_id)
+                   .get('Next evolution(s)')[0]
+                   .get('Number')
+            )
         except KeyError:
             return None
 
     @classmethod
     def evolution_cost_for(cls, pokemon_id):
         try:
-            return int(cls.data_for(pokemon_id)['Next Evolution Requirements']['Amount'])
+            return int(
+                cls.data_for(pokemon_id)
+                   .get('Next Evolution Requirements')
+                   .get('Amount')
+            )
         except KeyError:
             return
 
@@ -235,7 +249,11 @@ class Pokemons(_BaseInventoryComponent):
     def all(self):
         # by default don't include eggs in all pokemon (usually just
         # makes caller's lives more difficult)
-        return [p for p in super(Pokemons, self).all() if not isinstance(p, Egg)]
+        return [
+            p for p in super(Pokemons, self).all()
+            if not isinstance(p, Egg)
+        ]
+
 
 class Egg(object):
     def __init__(self, data):
@@ -260,7 +278,8 @@ class Pokemon(object):
         self.nickname = data.get('nickname', u'–')
 
     def can_evolve_now(self):
-        return self.has_next_evolution and self.candy_quantity > self.evolution_cost
+        return self.has_next_evolution \
+            and self.candy_quantity > self.evolution_cost
 
     def has_next_evolution(self):
         return 'Next Evolution Requirements' in self._static_data
@@ -296,5 +315,11 @@ class Inventory(object):
         self.refresh(raw)
 
     def refresh(self, raw):
-        for i in (self.pokedex, self.candy, self.items, self.pokemons, self.player):
+        for i in (
+            self.pokedex,
+            self.candy,
+            self.items,
+            self.pokemons,
+            self.player
+        ):
             i.refresh(raw)

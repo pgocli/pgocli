@@ -2,9 +2,6 @@ import click
 import json
 import os
 
-class ConfigException(Exception):
-    pass
-
 
 class Config:
     def __init__(self, path):
@@ -14,7 +11,9 @@ class Config:
             try:
                 self.load()
             except ValueError:
-                raise ConfigException('The specified configuration is not valid JSON')
+                raise ConfigException(
+                    'The specified configuration is not valid JSON'
+                )
 
     def __unicode__(self):
         return json.dumps(
@@ -32,7 +31,7 @@ class Config:
         return unicode(self).encode('utf-8')
 
     def __getattr__(self, name):
-        if not name in self.__dict__:
+        if name not in self.__dict__:
             return None
 
         return self.__dict__[name]
@@ -53,4 +52,6 @@ class Config:
             f.write(str(self))
 
             click.secho('\nThe configuration has been saved.', bold=True)
-            click.echo('Run `pgo config list` to display the saved configuration.')
+            click.echo(
+                'Run `pgo config list` to display the saved configuration.'
+            )
