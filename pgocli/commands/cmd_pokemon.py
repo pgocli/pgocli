@@ -1,19 +1,64 @@
 import click
 from tabulate import tabulate
+from datetime import datetime
+from collections import OrderedDict
 
 from ..context import require_steps
 
 
 def _format_iv(iv):
-    return '{}%'.format(int(iv * 100))
+    iv_str = '{}%'.format(iv * 100)
+
+    if iv > 0.8:
+        return click.style(iv_str, fg='green', bold=iv == 1)
+
+    if iv > 0.6:
+        return click.style(iv_str, fg='yellow')
+
+    if iv < 0.2:
+        return click.style(iv_str, fg='red')
+
+    return iv_str
+
 
 def _format_iv_value(value):
     if value == 15:
         return click.style(str(value), fg='green')
+
+    if value > 13:
+        return click.style(str(value), fg='yellow')
+
     if value < 5:
         return click.style(str(value), fg='red')
 
     return value
+
+
+def _format_row(row):
+    row['iv'] = _format_iv(row['iv'])
+    row['iv_attack'] = _format_iv_value(row['iv_attack'])
+    row['iv_defense'] = _format_iv_value(row['iv_defense'])
+    row['iv_stamina'] = _format_iv_value(row['iv_stamina'])
+    row['date'] = datetime.fromtimestamp(row['date'] / 1000).isoformat(' ')
+    return row
+
+
+def _sort(key, rev=False):
+    def sort_func(x, y):
+        px = x.get(key)
+        py = y.get(key)
+
+        if rev:
+            px, py = py, px
+
+        if px is str:
+            px = px.lower()
+        if py is str:
+            px = py.lower()
+
+        return cmp(px, py)
+    return sort_func
+
 
 @click.command(name='pokemon',
                short_help='List pokemon in the inventory')
@@ -31,51 +76,57 @@ def cli(ctx, sort, pager):
         sort = 'id'
 
     data = [
-        [
-            p.pokemon_id,
-            p.name,
-            p.cp,
-            _format_iv(p.iv),
-            _format_iv_value(p.iv_attack),
-            _format_iv_value(p.iv_defense),
-            _format_iv_value(p.iv_stamina),
-            inventory.candy.get(p.pokemon_id).quantity,
-            p.nickname,
-            p.caught_at
-        ]
+        OrderedDict([
+            ('id', p.pokemon_id),
+            ('name', p.name),
+            ('cp', p.cp),
+            ('iv', p.iv),
+            ('iv_attack', p.iv_attack),
+            ('iv_defense', p.iv_defense),
+            ('iv_stamina', p.iv_stamina),
+            ('candy', inventory.candy.get(p.pokemon_id).quantity),
+            ('nickname', p.nickname),
+            ('date', p.caught_at)
+        ])
         for p in inventory.pokemons.all()
     ]
 
     if sort == 'id':
-        data.sort(cmp=lambda x, y: cmp(x[0], y[0]))
+        data.sort(cmp=_sort('id', rev=True))
     elif sort == 'name':
-        data.sort(cmp=lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        data.sort(cmp=_sort('name'))
     elif sort == 'cp':
-        data.sort(cmp=lambda x, y: cmp(y[2], x[2]))
+        data.sort(cmp=_sort('cp', rev=True))
     elif sort == 'iv':
-        data.sort(cmp=lambda x, y: cmp(y[3], x[3]))
+        data.sort(cmp=_sort('iv', rev=True))
     elif sort == 'candy':
-        data.sort(cmp=lambda x, y: cmp(y[7], x[7]))
+        data.sort(cmp=_sort('candy', rev=True))
     elif sort == 'nickname':
-        data.sort(cmp=lambda x, y: cmp(x[8].lower(), y[8].lower()))
+        data.sort(cmp=_sort('nickname'))
     elif sort == 'date':
-        data.sort(cmp=lambda x, y: cmp(y[9], x[9]))
+        data.sort(cmp=_sort('date', rev=True))
 
-    table = tabulate(data, headers=[
-        click.style(head, bold=True)
-        for head in [
-            'ID',
-            'Name',
-            'CP',
-            'IV',
-            'Attack',
-            'Defense',
-            'Stamina',
-            'Candy',
-            'Nickname',
-            'Date'
-        ]
-    ])
+    table = tabulate(
+        [
+            _format_row(row)
+            for row in data
+        ],
+        headers=OrderedDict(
+            (head_id, click.style(head_title, bold=True))
+            for head_id, head_title in [
+                ('id', 'ID'),
+                ('name', 'Name'),
+                ('cp', 'CP'),
+                ('iv', 'IV'),
+                ('iv_attack', 'Attack'),
+                ('iv_defense', 'Defense'),
+                ('iv_stamina', 'Stamina'),
+                ('candy', 'Candy'),
+                ('nickname', 'Nickname'),
+                ('date', 'Date')
+            ]
+        )
+    )
 
     if pager:
         click.echo_via_pager(table)

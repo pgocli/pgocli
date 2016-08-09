@@ -3,8 +3,6 @@
 import json
 import os
 
-from datetime import datetime
-
 '''
 Helper class for updating/retrieving Inventory data
 Initially designed by https://github.com/aeckert
@@ -278,7 +276,7 @@ class Pokemon(object):
         self.iv_stamina = data.get('individual_stamina', 0)
         self.iv = self._compute_iv()
         self.nickname = data.get('nickname', u'–')
-        self.caught_at = datetime.fromtimestamp(data.get('creation_time_ms') / 1000).isoformat(' ')
+        self.caught_at = data.get('creation_time_ms')
 
     def can_evolve_now(self):
         return self.has_next_evolution \
