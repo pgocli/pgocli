@@ -50,15 +50,7 @@ class Config:
 
     def save(self):
         with open(self._path, 'w+') as f:
-            f.write(json.dumps(
-                self,
-                default=lambda o: {
-                    k: getattr(o, k) for k in vars(o)
-                    if not str(k).startswith('_')
-                },
-                sort_keys=True,
-                indent=4
-            ))
+            f.write(unicode(self).encode('utf8'))
 
             click.secho('\nThe configuration has been saved.', bold=True)
             click.echo('Run `pgo config list` to display the saved configuration.')
