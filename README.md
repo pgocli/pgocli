@@ -1,6 +1,6 @@
-# pgocli
+# pgocli [![CircleCI](https://circleci.com/gh/tusbar/pgocli.svg?style=svg)](https://circleci.com/gh/tusbar/pgocli)
 
-## Development environment
+## Development
 
 ```shell
 $ virtualenv env
@@ -17,8 +17,16 @@ $ pgo --help
 $ docker pull pgocli/pgocli
 $ docker run -it pgocli/pgocli bash
 $ cd /opt/pgocli
+
 $ pgo --help
 $ pgo location
 $ pgo login AUTH_SERVICE
 $ pgo pokemon
+```
+
+## Test
+
+```shell
+$ pip install tox
+$ tox
 ```

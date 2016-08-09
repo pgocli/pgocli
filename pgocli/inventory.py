@@ -284,9 +284,6 @@ class Pokemon(object):
     def has_next_evolution(self):
         return 'Next Evolution Requirements' in self._static_data
 
-    def has_seen_next_evolution(self):
-        return pokedex().captured(self.next_evolution_id)
-
     @property
     def next_evolution_id(self):
         return Pokemons.next_evolution_id_for(self.pokemon_id)
