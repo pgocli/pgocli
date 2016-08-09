@@ -18,7 +18,9 @@ setup(name='pgocli',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-        'click'
+        'click',
+        'pgoapi',
+        'tabulate'
       ],
       entry_points="""
       [console_scripts]
