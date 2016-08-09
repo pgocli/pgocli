@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import click
 
 from ..context import require_steps
@@ -24,3 +26,6 @@ def cli(ctx, type, username, password):
         )
 
         config.save()
+
+    else:
+        click.secho('Login failed…', fg='red')
