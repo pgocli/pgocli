@@ -12,7 +12,7 @@ def _format_iv(iv):
 
 @click.command(name='pokemon',
                short_help='List pokemon in the inventory')
-@click.option('--sort', '-s', type=click.Choice(['id', 'name', 'cp', 'iv', 'candy']))
+@click.option('--sort', '-s', type=click.Choice(['id', 'name', 'cp', 'iv', 'candy', 'nickname']))
 @click.option('--pager', '-p', is_flag=True)
 @click.pass_context
 @require_steps(['position', 'login', 'player'])
@@ -24,7 +24,7 @@ def cli(ctx, sort, pager):
 
     data = [
         [p.pokemon_id, p.name, p.cp, _format_iv(p.iv), p.iv_attack, p.iv_defense, p.iv_stamina,
-        inventory.candy.get(p.pokemon_id).quantity]
+        inventory.candy.get(p.pokemon_id).quantity, p.nickname]
         for p in inventory.pokemons.all()
     ]
 
@@ -38,10 +38,12 @@ def cli(ctx, sort, pager):
         data.sort(cmp=lambda x, y: cmp(y[3], x[3]))
     elif sort == 'candy':
         data.sort(cmp=lambda x, y: cmp(y[7], x[7]))
+    elif sort == 'nickname':
+        data.sort(cmp=lambda x, y: cmp(x[8].lower(), y[8].lower()))
 
     table = tabulate(data, headers=[
         click.style(head, bold=True)
-        for head in ['ID', 'Name', 'CP', 'IV', 'Attack', 'Defense', 'Stamina', 'Candy']
+        for head in ['ID', 'Name', 'CP', 'IV', 'Attack', 'Defense', 'Stamina', 'Candy', 'Nickname']
     ])
 
     if pager:

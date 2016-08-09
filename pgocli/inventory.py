@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import os
 
@@ -255,6 +257,7 @@ class Pokemon(object):
         self.iv_defense = data.get('individual_defense', 0)
         self.iv_stamina = data.get('individual_stamina', 0)
         self.iv = self._compute_iv()
+        self.nickname = data.get('nickname', u'–')
 
     def can_evolve_now(self):
         return self.has_next_evolution and self.candy_quantity > self.evolution_cost
