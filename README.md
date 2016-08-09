@@ -10,3 +10,10 @@ $ pip install -e .
 
 $ pgo --help
 ```
+
+## Docker
+
+```shell
+$ docker pull pgocli/pgocli
+$ docker run pgocli/pgocli pgo --help
+```
