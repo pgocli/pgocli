@@ -6,14 +6,18 @@ from ..context import require_steps
 def _echo_string(name, value):
     click.echo('{:27}: {}'.format(click.style(name, bold=True), value))
 
+
 def _echo_int(name, value):
     _echo_string(name, '{:,}'.format(int(value)))
+
 
 def _echo_float(name, value):
     _echo_string(name, '{:.2f}'.format(float(value)))
 
+
 def _echo_fraction(name, num, den):
     _echo_string(name, '{:,} / {:,}'.format(int(num), int(den)))
+
 
 @click.command(name='info',
                short_help='Display information about the player')
@@ -46,7 +50,8 @@ def cli(ctx):
 
     click.secho('[Player]', fg='magenta')
     _echo_int('Level', inventory.player.level)
-    _echo_fraction('XP',
+    _echo_fraction(
+        'XP',
         inventory.player.experience-inventory.player.prev_level_xp,
         inventory.player.next_level_xp-inventory.player.prev_level_xp
     )
@@ -63,15 +68,24 @@ def cli(ctx):
 
     click.secho('[Pokedex]', fg='magenta')
     _echo_fraction('Seen', inventory.pokedex.total_seen(), pokedex_total)
-    _echo_fraction('Captured', inventory.pokedex.total_captured(), pokedex_total)
+    _echo_fraction(
+        'Captured',
+        inventory.pokedex.total_captured(), pokedex_total
+    )
     click.echo()
 
     click.secho('[Pokemon]', fg='cyan')
-    _echo_fraction('Storage', inventory.pokemons.total_count(), player.get('max_pokemon_storage'))
+    _echo_fraction(
+        'Storage',
+        inventory.pokemons.total_count(), player.get('max_pokemon_storage')
+    )
     click.echo()
 
     click.secho('[Inventory]', fg='cyan')
-    _echo_fraction('Storage', inventory.items.total_count(), player.get('max_item_storage'))
+    _echo_fraction(
+        'Storage',
+        inventory.items.total_count(), player.get('max_item_storage')
+    )
     for item in inventory.items.all():
         _echo_int(item.name, item.count)
     click.echo()
