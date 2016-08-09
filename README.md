@@ -1,5 +1,7 @@
 # pgocli [![CircleCI](https://circleci.com/gh/pgocli/pgocli.svg?style=svg)](https://circleci.com/gh/pgocli/pgocli)
 
+[![Code Health](https://landscape.io/github/pgocli/pgocli/master/landscape.svg?style=flat)](https://landscape.io/github/pgocli/pgocli/master)
+
 ## Development
 
 ```shell
