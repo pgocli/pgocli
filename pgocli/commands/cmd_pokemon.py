@@ -5,14 +5,21 @@ from ..context import require_steps
 
 
 def _format_iv(iv):
-    return int(iv * 100)
+    return '{}%'.format(int(iv * 100))
 
+def _format_iv_value(value):
+    if value == 15:
+        return click.style(str(value), fg='green')
+    if value < 5:
+        return click.style(str(value), fg='red')
+
+    return value
 
 @click.command(name='pokemon',
                short_help='List pokemon in the inventory')
 @click.option(
     '--sort', '-s',
-    type=click.Choice(['id', 'name', 'cp', 'iv', 'candy', 'nickname'])
+    type=click.Choice(['id', 'name', 'cp', 'iv', 'candy', 'nickname', 'date'])
 )
 @click.option('--pager', '-p', is_flag=True)
 @click.pass_context
@@ -29,11 +36,12 @@ def cli(ctx, sort, pager):
             p.name,
             p.cp,
             _format_iv(p.iv),
-            p.iv_attack,
-            p.iv_defense,
-            p.iv_stamina,
+            _format_iv_value(p.iv_attack),
+            _format_iv_value(p.iv_defense),
+            _format_iv_value(p.iv_stamina),
             inventory.candy.get(p.pokemon_id).quantity,
-            p.nickname
+            p.nickname,
+            p.caught_at
         ]
         for p in inventory.pokemons.all()
     ]
@@ -50,6 +58,8 @@ def cli(ctx, sort, pager):
         data.sort(cmp=lambda x, y: cmp(y[7], x[7]))
     elif sort == 'nickname':
         data.sort(cmp=lambda x, y: cmp(x[8].lower(), y[8].lower()))
+    elif sort == 'date':
+        data.sort(cmp=lambda x, y: cmp(y[9], x[9]))
 
     table = tabulate(data, headers=[
         click.style(head, bold=True)
@@ -62,7 +72,8 @@ def cli(ctx, sort, pager):
             'Defense',
             'Stamina',
             'Candy',
-            'Nickname'
+            'Nickname',
+            'Date'
         ]
     ])
 
