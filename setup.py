@@ -19,9 +19,10 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-    'click',
-    'pgoapi',
-    'tabulate'
+        'click',
+        'pgoapi',
+        'geopy',
+        'tabulate'
     ],
     entry_points='''
     [console_scripts]
