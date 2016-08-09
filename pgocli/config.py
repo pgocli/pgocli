@@ -50,7 +50,7 @@ class Config:
 
     def save(self):
         with open(self._path, 'w+') as f:
-            f.write(unicode(self).encode('utf8'))
+            f.write(str(self))
 
             click.secho('\nThe configuration has been saved.', bold=True)
             click.echo('Run `pgo config list` to display the saved configuration.')
