@@ -70,16 +70,26 @@ def _sort(key, rev=False):
                short_help='List pokemon in the inventory')
 @click.option(
     '--sort', '-s',
-    type=click.Choice(['id', 'name', 'cp', 'iv', 'candy', 'nickname', 'date'])
+    type=click.Choice(['id', 'name', 'cp', 'iv', 'candy', 'nickname', 'date']),
+    help='Sort pokemon list'
 )
-@click.option('--pager', '-p', is_flag=True)
+@click.option('--name', '-n', help='Filter by pokemon name')
+@click.option('--pager', '-p', is_flag=True, help='Display in a pager')
 @click.pass_context
 @require_steps(['position', 'login', 'player'])
-def cli(ctx, sort, pager):
+def cli(ctx, sort, name, pager):
     inventory = ctx.obj.get('inventory')
 
     if not sort:
         sort = 'id'
+
+    pokemon_list = inventory.pokemons.all()
+
+    if name:
+        pokemon_list = filter(
+            lambda p: name.lower() in p.name.lower(),
+            pokemon_list
+        )
 
     data = [
         OrderedDict([
@@ -94,11 +104,11 @@ def cli(ctx, sort, pager):
             ('nickname', p.nickname),
             ('date', p.caught_at)
         ])
-        for p in inventory.pokemons.all()
+        for p in pokemon_list
     ]
 
     if sort == 'id':
-        data.sort(cmp=_sort('id', rev=True))
+        data.sort(cmp=_sort('id'))
     elif sort == 'name':
         data.sort(cmp=_sort('name'))
     elif sort == 'cp':
