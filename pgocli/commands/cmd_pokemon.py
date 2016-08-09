@@ -9,6 +9,12 @@ from ..context import require_steps
 def _format_iv(iv):
     iv_str = '{}%'.format(iv * 100)
 
+    if iv == 1:
+        iv_str = ' 100%'
+
+    if iv < 0.1:
+        iv_str = ' {}'.format(iv_str)
+
     if iv > 0.8:
         return click.style(iv_str, fg='green', bold=iv == 1)
 

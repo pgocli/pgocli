@@ -299,7 +299,7 @@ class Pokemon(object):
 
     def _compute_iv(self):
         total_iv = self.iv_attack + self.iv_defense + self.iv_stamina
-        pokemon_potential = round((total_iv / 45.0), 2)
+        pokemon_potential = round((total_iv / 45.0), 3)
         return pokemon_potential
 
 
