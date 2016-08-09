@@ -25,4 +25,6 @@ RUN cd /opt/pgocli && pip install -e .
 
 # clean
 RUN apt-clean
+
+WORKDIR /opt/pgocli
 # EOF
