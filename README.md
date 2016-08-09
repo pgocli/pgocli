@@ -19,7 +19,7 @@ $ docker run -it pgocli/pgocli bash
 $ cd /opt/pgocli
 
 $ pgo --help
-$ pgo location
+$ pgo position
 $ pgo login AUTH_SERVICE
 $ pgo pokemon
 ```
