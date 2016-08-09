@@ -3,11 +3,9 @@ import sys
 
 from setuptools import setup
 
-exec(open('pgocli/version.py').read())
-
 setup(
     name='pgocli',
-    version=__version__,
+    version='0.1',
     description='',
     long_description='',
     classifiers=[],

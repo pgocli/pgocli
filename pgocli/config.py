@@ -3,6 +3,10 @@ import json
 import os
 
 
+class ConfigException(Exception):
+    pass
+
+
 class Config:
     def __init__(self, path):
         self._path = path
