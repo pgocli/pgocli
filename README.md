@@ -1,4 +1,4 @@
-# pgocli [![CircleCI](https://circleci.com/gh/tusbar/pgocli.svg?style=svg)](https://circleci.com/gh/tusbar/pgocli)
+# pgocli [![CircleCI](https://circleci.com/gh/pgocli/pgocli.svg?style=svg)](https://circleci.com/gh/pgocli/pgocli)
 
 ## Development
 
