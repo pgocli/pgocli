@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
+# Helper class for updating/retrieving Inventory data
+# Initially designed by https://github.com/aeckert
+
 import json
 import os
-
-'''
-Helper class for updating/retrieving Inventory data
-Initially designed by https://github.com/aeckert
-'''
 
 
 class _BaseInventoryComponent(object):
@@ -42,8 +40,8 @@ class _BaseInventoryComponent(object):
     def refresh(self, inventory):
         self._data = self.retrieve_data(inventory)
 
-    def get(self, id):
-        return self._data(id)
+    def get(self, item_id):
+        return self._data(item_id)
 
     def all(self):
         return list(self._data.values())
