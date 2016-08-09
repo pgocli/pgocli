@@ -1,5 +1,7 @@
 import click
-import json
+
+from ..context import require_steps
+
 
 def _echo_string(name, value):
     click.echo('{:27}: {}'.format(click.style(name, bold=True), value))
@@ -16,6 +18,7 @@ def _echo_fraction(name, num, den):
 @click.command(name='info',
                short_help='Display information about the player')
 @click.pass_context
+@require_steps(['position', 'login', 'player'])
 def cli(ctx):
     config = ctx.obj.get('config')
     player = ctx.obj.get('player')
