@@ -100,6 +100,67 @@ class Pokedex(_BaseInventoryComponent):
         return self._data[pokemon_id]['times_captured'] > 0
 
 
+class Player(_BaseInventoryComponent):
+    TYPE = 'player_stats'
+    ID_FIELD = 'level'
+
+    def refresh(self, inventory):
+        _BaseInventoryComponent.refresh(self, inventory)
+        self._player = self._data.values()[0]
+
+    @property
+    def pokemons_captured(self):
+        return self._player.get('pokemons_captured', 0)
+
+    @property
+    def km_walked(self):
+        return self._player.get('km_walked', 0.0)
+
+    @property
+    def level(self):
+        return self._player.get('level')
+
+    @property
+    def big_magikarp_caught(self):
+        return self._player.get('big_magikarp_caught', 0)
+
+    @property
+    def experience(self):
+        return self._player.get('experience', 0)
+
+    @property
+    def pokemons_encountered(self):
+        return self._player.get('pokemons_encountered', 0)
+
+    @property
+    def pokeballs_thrown(self):
+        return self._player.get('pokeballs_thrown', 0)
+
+    @property
+    def eggs_hatched(self):
+        return self._player.get('eggs_hatched', 0)
+
+    @property
+    def small_rattata_caught(self):
+        return self._player.get('small_rattata_caught', 0)
+
+    @property
+    def unique_pokedex_entries(self):
+        return self._player.get('unique_pokedex_entries')
+
+    @property
+    def prev_level_xp(self):
+        return self._player.get('prev_level_xp', 0)
+
+    @property
+    def next_level_xp(self):
+        return self._player.get('next_level_xp', 0)
+
+    @property
+    def poke_stop_visits(self):
+        return self._player.get('poke_stop_visits', 0)
+
+
 class Items(_BaseInventoryComponent):
     TYPE = 'item'
     ID_FIELD = 'item_id'
@@ -237,8 +298,9 @@ class Inventory(object):
         self.candy = Candies()
         self.items = Items()
         self.pokemons = Pokemons()
+        self.player = Player()
         self.refresh(raw)
 
     def refresh(self, raw):
-        for i in (self.pokedex, self.candy, self.items, self.pokemons):
+        for i in (self.pokedex, self.candy, self.items, self.pokemons, self.player):
             i.refresh(raw)
