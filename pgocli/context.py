@@ -85,12 +85,12 @@ def require_steps(steps):
                 with click.progressbar(
                     length=len(steps) * 2,
                     label='Initializing…'
-                ) as bar:
+                ) as progressbar:
                     for step in steps:
                         INIT_STEPS[step](ctx, api, config)
-                        bar.update(1)
+                        progressbar.update(1)
                         time.sleep(0.3)
-                        bar.update(1)
+                        progressbar.update(1)
 
                     click.echo()
             return cmd(ctx, *args, **kwargs)

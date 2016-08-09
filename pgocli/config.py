@@ -7,7 +7,7 @@ class ConfigException(Exception):
     pass
 
 
-class Config:
+class Config(object):
     def __init__(self, path):
         self._path = path
 

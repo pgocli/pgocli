@@ -3,7 +3,7 @@ import click
 
 @click.group(short_help='Manage configuration')
 @click.pass_context
-def cli(ctx):
+def cli(ctx):  # pylint: disable=unused-argument
     pass
 
 
