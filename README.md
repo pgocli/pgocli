@@ -15,5 +15,10 @@ $ pgo --help
 
 ```shell
 $ docker pull pgocli/pgocli
-$ docker run pgocli/pgocli pgo --help
+$ docker run -it pgocli/pgocli bash
+$ cd /opt/pgocli
+$ pgo --help
+$ pgo location
+$ pgo login AUTH_SERVICE
+$ pgo pokemon
 ```
