@@ -1,6 +1,6 @@
 import click
 from tabulate import tabulate
-from datetime import datetime
+import datetime
 from collections import OrderedDict
 
 from ..context import require_steps
@@ -45,7 +45,7 @@ def _format_row(row):
     row['iv_attack'] = _format_iv_value(row['iv_attack'])
     row['iv_defense'] = _format_iv_value(row['iv_defense'])
     row['iv_stamina'] = _format_iv_value(row['iv_stamina'])
-    row['date'] = datetime.fromtimestamp(row['date'] / 1000).isoformat(' ')
+    row['date'] = row['date'].isoformat(' ')
     return row
 
 
@@ -66,6 +66,22 @@ def _sort(key, rev=False):
     return sort_func
 
 
+def _filter_date(date):
+    today = datetime.date.today()
+
+    if date == 'today':
+        start = datetime.datetime(today.year, today.month, today.day)
+        end = datetime.datetime.now()
+    elif date == 'yesterday':
+        start = datetime.datetime(today.year, today.month, today.day - 1)
+        end = datetime.datetime(today.year, today.month, today.day)
+
+    def filter_func(pokemon):
+        return pokemon.caught_at > start and pokemon.caught_at < end
+
+    return filter_func
+
+
 @click.command(name='pokemon',
                short_help='List pokemon in the inventory')
 @click.option(
@@ -74,10 +90,15 @@ def _sort(key, rev=False):
     help='Sort pokemon list'
 )
 @click.option('--name', '-n', help='Filter by pokemon name')
+@click.option(
+    '--date', '-d',
+    type=click.Choice(['today', 'yesterday']),
+    help='Filter by catch date'
+)
 @click.option('--pager', '-p', is_flag=True, help='Display in a pager')
 @click.pass_context
 @require_steps(['position', 'login', 'player'])
-def cli(ctx, sort, name, pager):
+def cli(ctx, sort, name, date, pager):
     inventory = ctx.obj.get('inventory')
 
     if not sort:
@@ -88,6 +109,12 @@ def cli(ctx, sort, name, pager):
     if name:
         pokemon_list = filter(
             lambda p: name.lower() in p.name.lower(),
+            pokemon_list
+        )
+
+    if date:
+        pokemon_list = filter(
+            _filter_date(date),
             pokemon_list
         )
 

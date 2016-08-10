@@ -5,6 +5,7 @@
 
 import json
 import os
+from datetime import datetime
 
 
 class _BaseInventoryComponent(object):
@@ -274,7 +275,9 @@ class Pokemon(object):
         self.iv_stamina = data.get('individual_stamina', 0)
         self.iv = self._compute_iv()
         self.nickname = data.get('nickname', u'–')
-        self.caught_at = data.get('creation_time_ms')
+        self.caught_at = datetime.fromtimestamp(
+            data.get('creation_time_ms') / 1000
+        )
 
     def can_evolve_now(self):
         return self.has_next_evolution \
